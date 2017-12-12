@@ -30,15 +30,14 @@ jobs:
         - name: node_modules
       run:
         path: sh
-        dir: etcher
         args:
           - -exc
           - |
+            cd etcher
             make electron-develop
-            ls ..
-            cp -rf node_modules/* ../node_modules
-            ls ..
-            ls ../node_modules
+            mv node_modules ../node_modules
+
+  # TODO: Use an aggregate to parallelize these
 
   - task: lint
     config:
@@ -47,9 +46,13 @@ jobs:
         - name: etcher
         - name: node_modules
       run:
-        path: ci/run-make.sh
-        dir: etcher
-        args: [ ../node_modules, lint ]
+        path: sh
+        args:
+          - -exc
+          - |
+            ls
+            cd etcher
+            ./ci/run-make.sh ../node_modules lint
 
   - task: test
     config:
